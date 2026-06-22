@@ -18,8 +18,16 @@ export default function PaymentSuccess() {
       try {
         const { data: session } = await api.get(`/payments/session/${sessionId}`);
         if (session.payment_status === "paid") {
-          await api.post("/payments/confirm", { sessionId, classId });
-          await api.post("/bookings", { classId, transactionId: sessionId, amount: session.amount_total / 100 });
+          try {
+            await api.post("/payments/confirm", { sessionId, classId });
+          } catch (e) {
+            if (e.response?.status !== 409) throw e;
+          }
+          try {
+            await api.post("/bookings", { classId, transactionId: sessionId, amount: session.amount_total / 100 });
+          } catch (e) {
+            if (e.response?.status !== 409) throw e;
+          }
           setStatus("success");
         } else {
           setStatus("error");

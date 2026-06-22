@@ -6,10 +6,10 @@ const DIFF_STYLE = {
   Advanced: { dot: "bg-rose", text: "text-rose", ring: "border-rose/40 bg-rose/10" },
 };
 
-export default function ClassCard({ cls }) {
+export default function ClassCard({ cls, index = 0 }) {
   const d = DIFF_STYLE[cls.difficulty] || DIFF_STYLE.Beginner;
   return (
-    <article className="group flex flex-col overflow-hidden rounded-xl border border-ink-600 bg-ink-900 transition-colors hover:border-ink-500">
+    <article className="group flex flex-col overflow-hidden rounded-xl border border-ink-600 bg-ink-900 transition-all duration-300 hover:border-ink-500 hover:shadow-lg hover:shadow-volt/5" style={{ animationDelay: `${index * 50}ms` }}>
       <div className="relative aspect-[16/10] overflow-hidden bg-ink-800">
         <img src={cls.image} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" onError={(e) => e.target.style.display = "none"} />
         <div className="absolute inset-0 bg-gradient-to-t from-ink-950/70 via-transparent to-transparent" />
@@ -19,15 +19,15 @@ export default function ClassCard({ cls }) {
         </span>
       </div>
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="font-display text-lg font-bold leading-snug tracking-tight text-fog-200">{cls.name}</h3>
+        <h3 className="font-display text-lg font-bold leading-snug tracking-tight text-fog-200 line-clamp-1">{cls.name}</h3>
         <p className="mt-1 text-sm text-fog-400">{cls.schedule} &middot; {cls.duration}</p>
         <p className="mt-2 line-clamp-2 text-sm text-fog-400">{cls.description}</p>
         <div className="mt-auto flex items-center justify-between gap-3 pt-3 border-t border-ink-600">
-          <div className="flex items-center gap-2">
-            <img src={cls.trainerImage || "https://i.pravatar.cc/80?img=33"} alt="" className="h-6 w-6 rounded-full object-cover" />
-            <span className="text-xs text-fog-400">{cls.trainerName}</span>
+          <div className="flex items-center gap-2 min-w-0">
+            <img src={cls.trainerImage || "https://i.pravatar.cc/80?img=33"} alt="" className="h-6 w-6 rounded-full object-cover shrink-0" />
+            <span className="text-xs text-fog-400 truncate">{cls.trainerName}</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             <span className="font-display text-lg font-extrabold text-fog-200">${cls.price}</span>
             <Link to={`/classes/${cls._id}`} className="rounded-full bg-volt px-4 py-2 text-sm font-semibold text-ink-950 hover:brightness-110 transition">View Details</Link>
           </div>

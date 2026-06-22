@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "../api";
 import ClassCard from "../components/ClassCard";
 import Spinner from "../components/Spinner";
+import { ClassCardSkeleton } from "../components/Skeletons";
 
 export default function AllClasses() {
   const [classes, setClasses] = useState([]);
@@ -12,7 +13,7 @@ export default function AllClasses() {
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
 
-  const fetchClasses = async (p = 1, q = "", cat = "") => {
+  const fetchClasses = useCallback(async (p = 1, q = "", cat = "") => {
     setLoading(true);
     try {
       const params = { page: p, limit: 9 };
@@ -25,9 +26,9 @@ export default function AllClasses() {
       setPage(p);
     } catch { setClasses([]); }
     setLoading(false);
-  };
+  }, []);
 
-  useEffect(() => { fetchClasses(); }, []);
+  useEffect(() => { fetchClasses(); }, [fetchClasses]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -35,8 +36,9 @@ export default function AllClasses() {
   };
 
   const handleCategory = (cat) => {
-    setCategory(cat === category ? "" : cat);
-    fetchClasses(1, search, cat === category ? "" : cat);
+    const next = category === cat ? "" : cat;
+    setCategory(next);
+    fetchClasses(1, search, next);
   };
 
   return (
@@ -47,7 +49,7 @@ export default function AllClasses() {
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        <form onSubmit={handleSearch} className="flex gap-2">
+        <form onSubmit={handleSearch} className="flex gap-2 flex-1">
           <input type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by class name..." className="flex-1 rounded-lg border border-ink-600 bg-ink-900 px-4 py-2.5 text-sm text-fog-200 placeholder:text-fog-500 focus:outline-none focus:border-volt" />
           <button type="submit" className="rounded-lg bg-volt px-4 py-2.5 text-sm font-semibold text-ink-950 hover:brightness-110">Search</button>
         </form>
@@ -60,7 +62,11 @@ export default function AllClasses() {
 
       <p className="text-sm text-fog-500 mb-4">{total} classes found</p>
 
-      {loading ? <Spinner size="lg" /> : classes.length === 0 ? (
+      {loading ? (
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => <ClassCardSkeleton key={i} />)}
+        </div>
+      ) : classes.length === 0 ? (
         <div className="text-center py-16 text-fog-400">No classes found matching your search.</div>
       ) : (
         <>

@@ -36,6 +36,7 @@ export default function Login() {
       const { data } = await api.post("/auth/google", {
         credential: credentialResponse.credential,
       });
+      localStorage.setItem("token", data.token);
       setUser(data.user);
       localStorage.setItem("user", JSON.stringify(data.user));
       toast.success("Logged in with Google!");

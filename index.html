@@ -15,7 +15,7 @@
         extend: {
           colors: {
             ink: { 950: "#0b0c0e", 900: "#131418", 850: "#16181d", 800: "#181a1f", 700: "#1f2228", 600: "#24272d", 500: "#32363d", 400: "#3f444c" },
-            fog: { 500: "#6b717b", 400: "#8b9099", 300: "#c7ccd4", 200: "#eef0f3" },
+            fog: { 500: "#7a808a", 400: "#8b9099", 300: "#c7ccd4", 200: "#eef0f3" },
             volt: "#ccff33",
             teal: "#2dd4bf",
             amber: "#f5a623",
@@ -372,34 +372,31 @@
           <div class="absolute inset-0 bg-gradient-to-t from-ink-950/70 via-transparent to-transparent"></div>
           <span class="absolute left-3 top-3 rounded-full border border-ink-500/60 bg-ink-950/70 px-2.5 py-1 text-xs font-semibold text-fog-200 backdrop-blur-sm">${c.category}</span>
           <span class="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full border ${d.ring} px-2.5 py-1 text-xs font-semibold ${d.text} backdrop-blur-sm"><span class="h-1.5 w-1.5 rounded-full ${d.dot}"></span>${c.difficulty}</span>
-          <button data-fav="${c.id}" aria-pressed="${fav}" aria-label="${fav ? "Remove from favorites" : "Save to favorites"}" class="fav-btn absolute bottom-3 right-3 flex h-9 w-9 items-center justify-center rounded-full border border-ink-500/60 bg-ink-950/70 text-fog-300 backdrop-blur-sm transition-colors hover:text-rose active:scale-90 ${fav ? "text-rose" : ""}">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="${fav ? "currentColor" : "none"}" aria-hidden="true"><path d="M12 21s-7.5-4.6-10-9.3C.6 8.4 2 5 5.2 5c2 0 3.3 1.2 4 2.3C9.9 6.2 11.2 5 13.2 5 16.4 5 17.8 8.4 16.4 11.7 13.9 16.4 12 21 12 21Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+          <button data-fav="${c.id}" aria-pressed="${fav}" aria-label="${fav ? "Remove from favorites" : "Save to favorites"}" class="fav-btn absolute bottom-3 right-3 flex h-11 w-11 items-center justify-center rounded-full border border-ink-500/60 bg-ink-950/70 text-fog-300 backdrop-blur-sm transition-colors hover:text-rose active:scale-90 ${fav ? "text-rose" : ""}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="${fav ? "currentColor" : "none"}" aria-hidden="true"><path d="M12 21s-7.5-4.6-10-9.3C.6 8.4 2 5 5.2 5c2 0 3.3 1.2 4 2.3C9.9 6.2 11.2 5 13.2 5 16.4 5 17.8 8.4 16.4 11.7 13.9 16.4 12 21 12 21Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
           </button>
         </div>
         <div class="flex flex-1 flex-col p-4">
           <h3 class="font-display text-lg font-bold leading-snug tracking-tight text-fog-200">${c.name}</h3>
-          <p class="mt-1.5 flex items-center gap-2 text-sm font-medium text-fog-200">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" class="text-volt shrink-0" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            ${c.schedule}
-          </p>
+          <div class="mt-1.5 flex items-center gap-2 text-sm text-fog-400">
+            <span class="flex items-center gap-1"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" class="text-volt shrink-0" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>${c.schedule}</span>
+            <span class="text-ink-500">·</span>
+            <span class="flex items-center gap-1"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>${c.duration}</span>
+            <span class="text-ink-500">·</span>
+            <span class="flex items-center gap-1"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 8 0 4 4 0 0 0-8 0Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${c.bookingCount}</span>
+          </div>
           <p class="mt-2 line-clamp-2 text-sm text-fog-400">${c.description}</p>
-          <div class="mt-3 flex items-center gap-3 text-xs text-fog-500">
-            <span class="inline-flex items-center gap-1"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>${c.duration}</span>
-            <span class="inline-flex items-center gap-1"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 8 0 4 4 0 0 0-8 0Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${c.bookingCount} booked</span>
-          </div>
-          <div class="mt-3 flex items-center gap-2 border-t border-ink-600 pt-3">
-            <img src="${c.trainerImage}" alt="" class="h-6 w-6 rounded-full object-cover" />
-            <span class="text-xs text-fog-400">${c.trainerName}</span>
-            <span class="rounded-full bg-ink-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-fog-500">Trainer</span>
-          </div>
-          <div class="mt-4 flex items-center justify-between gap-3">
-            <div>
-              <div class="font-display text-xl font-extrabold text-fog-200">$${c.price}</div>
-              <div class="text-[11px] text-fog-500">per session</div>
+          <div class="mt-auto flex items-center justify-between gap-3 pt-3 border-t border-ink-600">
+            <div class="flex items-center gap-2">
+              <img src="${c.trainerImage}" alt="" class="h-6 w-6 rounded-full object-cover" />
+              <span class="text-xs text-fog-400">${c.trainerName}</span>
             </div>
-            ${booked
-              ? `<button disabled title="You already have a booking for this class" class="inline-flex items-center gap-1.5 rounded-full border border-teal/40 bg-teal/10 px-4 py-3 text-sm font-semibold text-teal cursor-default"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 5 5L20 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Booked</button>`
-              : `<button data-book="${c.id}" class="rounded-full bg-volt px-5 py-3 text-sm font-semibold text-ink-950 transition hover:brightness-110 active:scale-[0.98]">Book class</button>`}
+            <div class="flex items-center gap-3">
+              <span class="font-display text-lg font-extrabold text-fog-200">$${c.price}</span>
+              ${booked
+                ? `<button disabled title="You already have a booking for this class" class="inline-flex items-center gap-1.5 rounded-full border border-teal/40 bg-teal/10 px-4 py-3 text-sm font-semibold text-teal cursor-default"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 5 5L20 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Booked</button>`
+                : `<button data-book="${c.id}" class="rounded-full bg-volt px-5 py-3 text-sm font-semibold text-ink-950 transition hover:brightness-110 active:scale-[0.98]">Book class</button>`}
+            </div>
           </div>
         </div>
       </article>`;
@@ -510,12 +507,16 @@
       if (visible.length === 0) return;
       const first = visible[0];
       const last = visible[visible.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
+      if (e.shiftKey) {
+        if (document.activeElement === first || !modal.contains(document.activeElement)) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last || !modal.contains(document.activeElement)) {
+          e.preventDefault();
+          first.focus();
+        }
       }
     }
     function confirmBooking(c) {

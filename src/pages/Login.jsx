@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -40,7 +41,10 @@ export default function Login() {
             </div>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-fog-500 mb-1.5">Password</label>
-              <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="w-full rounded-lg border border-ink-600 bg-ink-800 px-4 py-3 text-sm text-fog-200 placeholder:text-fog-500 focus:outline-none focus:border-volt" placeholder="Min 6 characters" />
+              <div className="relative">
+                <input type={showPassword ? "text" : "password"} required value={password} onChange={(e) => setPassword(e.target.value)} className="w-full rounded-lg border border-ink-600 bg-ink-800 px-4 py-3 text-sm text-fog-200 placeholder:text-fog-500 focus:outline-none focus:border-volt pr-12" placeholder="Min 6 characters" />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-fog-500 hover:text-fog-300 text-xs">{showPassword ? "Hide" : "Show"}</button>
+              </div>
             </div>
             <button type="submit" disabled={submitting} className="w-full rounded-full bg-volt px-5 py-3 text-sm font-bold text-ink-950 hover:brightness-110 transition disabled:opacity-50">
               {submitting ? "Signing in..." : "Login"}

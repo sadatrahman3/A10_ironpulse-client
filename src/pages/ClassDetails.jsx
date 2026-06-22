@@ -31,6 +31,7 @@ export default function ClassDetails() {
 
   const handleBook = async () => {
     if (!user) return navigate(`/login?redirect=${encodeURIComponent(`/classes/${id}`)}`);
+    if (user.role !== "user") return toast.error("Only regular users can book classes");
     if (hasBooked) return toast.error("You have already booked this class");
     try {
       setBooking(true);

@@ -8,6 +8,12 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const handleForceLogout = () => setUser(null);
+    window.addEventListener("auth:logout", handleForceLogout);
+    return () => window.removeEventListener("auth:logout", handleForceLogout);
+  }, []);
+
+  useEffect(() => {
     const saved = localStorage.getItem("user");
     if (saved) {
       try { setUser(JSON.parse(saved)); } catch { localStorage.removeItem("user"); }
@@ -24,8 +30,8 @@ export function AuthProvider({ children }) {
         localStorage.setItem("user", JSON.stringify(data.user));
       })
       .catch(() => {
-        // Keep the cached user from localStorage instead of logging out.
-        // The 401 interceptor handles real auth failures on actual API calls.
+        // Keep cached user — the 401 interceptor dispatches "auth:logout"
+        // on real session failures, which sets user to null.
       })
       .finally(() => setLoading(false));
   }, []);

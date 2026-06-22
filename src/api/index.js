@@ -10,11 +10,8 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401 && !err.config?.url?.includes("/auth/me")) {
-      const path = window.location.pathname;
-      if (!path.startsWith("/login") && !path.startsWith("/register") && !path.startsWith("/payment")) {
-        localStorage.removeItem("user");
-        window.location.href = `/login?redirect=${encodeURIComponent(path)}`;
-      }
+      localStorage.removeItem("user");
+      window.dispatchEvent(new Event("auth:logout"));
     }
     return Promise.reject(err);
   }

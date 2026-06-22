@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FiTwitter, FiInstagram, FiYoutube } from "react-icons/fi";
+import { FiTwitter, FiInstagram, FiYoutube, FiGithub } from "react-icons/fi";
 
 export default function Footer() {
   return (
@@ -36,6 +36,7 @@ export default function Footer() {
               <a href="#" className="flex h-10 w-10 items-center justify-center rounded-full border border-ink-600 bg-ink-900 text-fog-400 hover:text-fog-200 hover:border-ink-500 transition-colors" aria-label="X (Twitter)"><FiTwitter size={16} /></a>
               <a href="#" className="flex h-10 w-10 items-center justify-center rounded-full border border-ink-600 bg-ink-900 text-fog-400 hover:text-fog-200 hover:border-ink-500 transition-colors" aria-label="Instagram"><FiInstagram size={16} /></a>
               <a href="#" className="flex h-10 w-10 items-center justify-center rounded-full border border-ink-600 bg-ink-900 text-fog-400 hover:text-fog-200 hover:border-ink-500 transition-colors" aria-label="YouTube"><FiYoutube size={16} /></a>
+              <a href="https://github.com/sadatrahman3" target="_blank" rel="noopener noreferrer" className="flex h-10 w-10 items-center justify-center rounded-full border border-ink-600 bg-ink-900 text-fog-400 hover:text-fog-200 hover:border-ink-500 transition-colors" aria-label="GitHub"><FiGithub size={16} /></a>
             </div>
           </div>
         </div>

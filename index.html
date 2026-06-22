@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IronPulse | Classes</title>
+  <meta name="description" content="Browse and book fitness classes at IronPulse." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: { 950: "#0b0c0e", 900: "#131418", 850: "#16181d", 800: "#181a1f", 700: "#1f2228", 600: "#24272d", 500: "#32363d", 400: "#3f444c" },
+            fog: { 500: "#6b717b", 400: "#8b9099", 300: "#c7ccd4", 200: "#eef0f3" },
+            volt: "#ccff33",
+            teal: "#2dd4bf",
+            amber: "#f5a623",
+            rose: "#ff5454",
+            sky: "#5b9eff",
+          },
+          fontFamily: {
+            display: ["Archivo", "system-ui", "sans-serif"],
+            sans: ["ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-feature-settings: "cv02", "cv03", "cv04"; -webkit-font-smoothing: antialiased; }
+    ::selection { background: rgba(204, 255, 51, 0.25); color: #fff; }
+
+    /* Focus architecture: dashed volt, 2px, 2px offset, uniform */
+    :where(a, button, input, select, [tabindex], [role="button"]):focus-visible {
+      outline: 2px dashed #ccff33;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    /* Scrollbar */
+    * { scrollbar-width: thin; scrollbar-color: #32363d transparent; }
+    *::-webkit-scrollbar { width: 10px; height: 10px; }
+    *::-webkit-scrollbar-thumb { background: #24272d; border-radius: 999px; border: 2px solid #0b0c0e; }
+    *::-webkit-scrollbar-thumb:hover { background: #32363d; }
+
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* Shimmer skeleton */
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+    .skeleton { position: relative; overflow: hidden; background: #181a1f; }
+    .skeleton::after {
+      content: ""; position: absolute; inset: 0;
+      transform: translateX(-100%);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+      animation: shimmer 1.4s infinite;
+    }
+
+    /* Card entrance */
+    @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .rise { animation: rise 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+    /* Modal */
+    @keyframes pop { from { opacity: 0; transform: translateY(8px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .pop { animation: pop 0.26s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+    .fade { animation: fade 0.2s ease-out both; }
+
+    /* Toast */
+    @keyframes toast-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .toast-in { animation: toast-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+    /* Pulse dot */
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+    .pulse-dot { animation: pulse-dot 1.8s ease-in-out infinite; }
+
+    .card-img { transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+    .class-card:hover .card-img { transform: scale(1.04); }
+
+    /* Favorite button: visual stays 36px, hit area expands to 48px via ::before */
+    .fav-btn::before { content: ""; position: absolute; inset: -6px; border-radius: 9999px; }
+
+    /* Touch-target floor: every interactive control meets 44px on coarse pointers */
+    @media (pointer: coarse) {
+      button:not([disabled]), [role="button"], select, a[href], input[type="search"], input[type="range"] {
+        min-height: 44px;
+      }
+    }
+
+    [hidden] { display: none !important; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+      .card-img { transition: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-ink-950 text-fog-300 font-sans min-h-screen">
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-volt focus:text-ink-950 focus:px-4 focus:py-2 focus:font-semibold focus:rounded">Skip to classes</a>
+
+  <!-- Top bar -->
+  <header class="sticky top-0 z-40 border-b border-ink-600 bg-ink-950/85 backdrop-blur-md">
+    <div class="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
+      <a href="#" class="flex items-center gap-2.5 shrink-0" aria-label="IronPulse home">
+        <svg width="26" height="26" viewBox="0 0 28 28" fill="none" aria-hidden="true" class="text-volt">
+          <path d="M2 14h5l2.5-7 4 14 3-9 2 2h7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="font-display text-lg font-extrabold tracking-tight text-fog-200">Iron<span class="text-volt">Pulse</span></span>
+      </a>
+
+      <nav class="ml-4 hidden md:flex items-center gap-1" aria-label="Primary">
+        <a href="#" class="rounded-md bg-ink-800 px-3 py-1.5 text-sm font-medium text-fog-200">Classes</a>
+        <a href="#" class="rounded-md px-3 py-1.5 text-sm font-medium text-fog-400 hover:text-fog-200 hover:bg-ink-800 transition-colors">Forum</a>
+        <a href="#" class="rounded-md px-3 py-1.5 text-sm font-medium text-fog-400 hover:text-fog-200 hover:bg-ink-800 transition-colors">My bookings</a>
+        <a href="#" class="rounded-md px-3 py-1.5 text-sm font-medium text-fog-400 hover:text-fog-200 hover:bg-ink-800 transition-colors">Favorites</a>
+      </nav>
+
+      <div class="ml-auto flex items-center gap-2 sm:gap-3">
+        <div class="hidden sm:flex items-center gap-2 rounded-full border border-ink-600 bg-ink-900 px-3 py-1.5 w-44 lg:w-56">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" class="text-fog-500 shrink-0" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="m20 20-3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <input id="navSearch" type="search" placeholder="Search classes" class="w-full bg-transparent text-sm text-fog-200 placeholder:text-fog-500 focus:outline-none" aria-label="Search classes" />
+        </div>
+        <button id="bookingsBtn" class="relative flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-ink-600 bg-ink-900 p-2.5 text-fog-300 hover:text-fog-200 hover:border-ink-500 transition-colors" aria-label="My bookings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span id="bookingsBadge" class="absolute -right-1 -top-1 hidden min-w-[18px] h-[18px] items-center justify-center rounded-full bg-volt px-1 text-[10px] font-bold text-ink-950">0</span>
+        </button>
+        <button class="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-ink-600 bg-ink-900 p-1 transition-colors hover:border-ink-500" aria-label="Account">
+          <img src="https://i.pravatar.cc/80?img=33" alt="" class="h-8 w-8 rounded-full object-cover" />
+        </button>
+        <button id="menuBtn" class="md:hidden flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-ink-600 bg-ink-900 p-2.5 text-fog-300" aria-label="Open menu" aria-expanded="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile nav -->
+    <div id="mobileNav" hidden class="md:hidden border-t border-ink-600 bg-ink-950 px-4 py-3">
+      <nav class="flex flex-col gap-1" aria-label="Mobile">
+        <a href="#" class="rounded-md bg-ink-800 px-3 py-3 text-sm font-medium text-fog-200">Classes</a>
+        <a href="#" class="rounded-md px-3 py-3 text-sm font-medium text-fog-400 hover:bg-ink-800 active:bg-ink-700">Forum</a>
+        <a href="#" class="rounded-md px-3 py-3 text-sm font-medium text-fog-400 hover:bg-ink-800 active:bg-ink-700">My bookings</a>
+        <a href="#" class="rounded-md px-3 py-3 text-sm font-medium text-fog-400 hover:bg-ink-800 active:bg-ink-700">Favorites</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <!-- Page head -->
+    <div class="flex flex-col gap-4 border-b border-ink-600 py-6 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <div class="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-fog-500">
+          <span class="pulse-dot inline-block h-1.5 w-1.5 rounded-full bg-volt"></span>
+          <span>Live schedule</span>
+        </div>
+        <h1 class="mt-2 font-display text-3xl font-extrabold tracking-tight text-fog-200 sm:text-4xl">Classes</h1>
+        <p class="mt-1.5 text-sm text-fog-400">Find a session, book your spot, train hard.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="text-right">
+          <div id="resultCount" class="font-display text-2xl font-bold text-fog-200" aria-live="polite">…</div>
+          <div class="text-xs text-fog-500">classes available</div>
+        </div>
+        <label class="sr-only" for="sortSelect">Sort by</label>
+        <select id="sortSelect" class="min-h-[44px] rounded-full border border-ink-600 bg-ink-900 px-4 py-2 text-sm font-medium text-fog-200 hover:border-ink-500">
+          <option value="popular">Most popular</option>
+          <option value="price-asc">Price: low to high</option>
+          <option value="price-desc">Price: high to low</option>
+          <option value="duration">Shortest first</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Layout: filter rail + results -->
+    <div class="grid grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)] gap-6 lg:gap-8 py-6">
+      <!-- Filter rail -->
+      <aside class="lg:sticky lg:top-20 lg:self-start">
+        <div class="flex items-center justify-between lg:mb-4">
+          <h2 class="font-display text-sm font-bold uppercase tracking-wider text-fog-400">Filters</h2>
+          <button id="filterToggle" class="lg:hidden inline-flex min-h-[44px] items-center rounded-md border border-ink-600 bg-ink-900 px-4 py-2 text-xs font-medium text-fog-300" aria-expanded="false" aria-controls="filterPanel">Filters</button>
+        </div>
+
+        <div id="filterPanel" class="space-y-6 hidden lg:block">
+          <div>
+            <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-fog-500" for="railSearch">Search</label>
+            <div class="flex items-center gap-2 rounded-lg border border-ink-600 bg-ink-900 px-3 py-2">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" class="text-fog-500 shrink-0" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="m20 20-3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              <input id="railSearch" type="search" placeholder="Class or keyword" class="w-full bg-transparent text-sm text-fog-200 placeholder:text-fog-500 focus:outline-none" aria-label="Search by keyword" />
+            </div>
+          </div>
+
+          <fieldset>
+            <legend class="mb-2 text-xs font-semibold uppercase tracking-wider text-fog-500">Category</legend>
+            <div id="categoryChips" class="flex flex-wrap gap-2" role="group" aria-label="Filter by category"></div>
+          </fieldset>
+
+          <fieldset>
+            <legend class="mb-2 text-xs font-semibold uppercase tracking-wider text-fog-500">Difficulty</legend>
+            <div id="difficultyChips" class="flex flex-wrap gap-2" role="group" aria-label="Filter by difficulty"></div>
+          </fieldset>
+
+          <fieldset>
+            <legend class="mb-2 text-xs font-semibold uppercase tracking-wider text-fog-500">Max price</legend>
+            <div class="flex items-center gap-3">
+              <input id="priceRange" type="range" min="15" max="45" step="1" value="45" class="w-full accent-volt" aria-label="Maximum price" />
+              <span id="priceLabel" class="w-12 shrink-0 text-right text-sm font-semibold text-fog-200">$45</span>
+            </div>
+            <div class="mt-1 flex justify-between text-[11px] text-fog-500"><span>$15</span><span>$45</span></div>
+          </fieldset>
+
+          <button id="clearFilters" class="w-full min-h-[44px] rounded-full border border-ink-600 bg-ink-900 px-4 py-2 text-sm font-medium text-fog-300 hover:border-ink-500 hover:text-fog-200 transition-colors">Clear filters</button>
+        </div>
+      </aside>
+
+      <!-- Results -->
+      <section aria-label="Class results">
+        <div id="stateBar" class="mb-4 hidden items-center gap-3 rounded-lg border border-rose/30 bg-rose/10 px-4 py-3" role="alert">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="shrink-0 text-rose" aria-hidden="true"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="flex-1">
+            <p class="text-sm font-semibold text-fog-200">Couldn't load classes</p>
+            <p class="text-xs text-fog-400">Check your connection and try again.</p>
+          </div>
+          <button id="retryBtn" class="min-h-[44px] rounded-full bg-volt px-4 py-2 text-sm font-semibold text-ink-950 hover:brightness-110">Try again</button>
+        </div>
+
+        <div id="grid" class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3" aria-live="polite" aria-busy="true"></div>
+
+        <!-- Empty state -->
+        <div id="emptyState" hidden class="flex flex-col items-center justify-center rounded-xl border border-dashed border-ink-500 bg-ink-900/40 px-6 py-16 text-center">
+          <div class="flex h-14 w-14 items-center justify-center rounded-full border border-ink-500 bg-ink-800 text-fog-500">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="m20 20-3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <h3 class="mt-4 font-display text-lg font-bold text-fog-200">No classes match these filters</h3>
+          <p class="mt-1 max-w-sm text-sm text-fog-400">Try widening your search, switching difficulty, or raising your max price.</p>
+          <button id="emptyClear" class="mt-5 min-h-[44px] rounded-full bg-volt px-5 py-2.5 text-sm font-semibold text-ink-950 hover:brightness-110">Clear filters</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="border-t border-ink-600 mt-8">
+    <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-6 text-xs text-fog-500 sm:flex-row sm:px-6 lg:px-8">
+      <div class="flex items-center gap-2">
+        <svg width="18" height="18" viewBox="0 0 28 28" fill="none" class="text-volt" aria-hidden="true"><path d="M2 14h5l2.5-7 4 14 3-9 2 2h7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>IronPulse. Train with intent.</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="#" class="hover:text-fog-300">Help</a>
+        <a href="#" class="hover:text-fog-300">Become a trainer</a>
+        <a href="#" class="hover:text-fog-300">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Booking modal -->
+  <div id="modalRoot" hidden class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div id="modalBackdrop" class="absolute inset-0 bg-ink-950/80 backdrop-blur-sm fade"></div>
+    <div id="modalCard" role="dialog" aria-modal="true" aria-labelledby="modalTitle" class="relative w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl border border-ink-500 bg-ink-900 pop">
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toastRoot" class="pointer-events-none fixed inset-x-0 bottom-6 z-50 flex justify-center px-4" aria-live="assertive"></div>
+
+  <script>
+    // Real seed data from the IronPulse backend (server/src/seed.js)
+    const CLASSES = [
+      { id: "c1", name: "Power Yoga Flow", image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800", category: "Yoga", difficulty: "Intermediate", duration: "60 min", schedule: "Mon, Wed, Fri · 7:00 AM", price: 25, bookingCount: 42, trainerName: "Sarah Mitchell", trainerImage: "https://i.pravatar.cc/150?img=45", description: "Energize your morning with a dynamic power yoga flow combining strength, flexibility, and mindfulness." },
+      { id: "c2", name: "HIIT Boot Camp", image: "https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=800", category: "Cardio", difficulty: "Advanced", duration: "45 min", schedule: "Tue, Thu · 6:00 PM", price: 30, bookingCount: 58, trainerName: "Sarah Mitchell", trainerImage: "https://i.pravatar.cc/150?img=45", description: "High-Intensity Interval Training that pushes your limits. Burn maximum calories in minimum time." },
+      { id: "c3", name: "Strength Training 101", image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800", category: "Weights", difficulty: "Beginner", duration: "50 min", schedule: "Mon, Wed · 5:00 PM", price: 35, bookingCount: 35, trainerName: "Sarah Mitchell", trainerImage: "https://i.pravatar.cc/150?img=45", description: "Learn the fundamentals of strength training with proper form. Covers squats, deadlifts, and presses." },
+      { id: "c4", name: "Spin & Burn", image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800", category: "Cardio", difficulty: "Intermediate", duration: "40 min", schedule: "Sat · 8:00 AM", price: 20, bookingCount: 28, trainerName: "Sarah Mitchell", trainerImage: "https://i.pravatar.cc/150?img=45", description: "Indoor cycling with high-energy music. Hills, sprints, and intervals. All fitness levels welcome." },
+      { id: "c5", name: "Pilates Core", image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800", category: "Yoga", difficulty: "Beginner", duration: "55 min", schedule: "Tue, Thu · 9:00 AM", price: 28, bookingCount: 31, trainerName: "Sarah Mitchell", trainerImage: "https://i.pravatar.cc/150?img=45", description: "Strengthen your core and improve posture with controlled movements, breathing, and alignment." },
+      { id: "c6", name: "Boxing Fitness", image: "https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=800", category: "Cardio", difficulty: "Advanced", duration: "60 min", schedule: "Fri · 7:00 PM", price: 32, bookingCount: 45, trainerName: "Sarah Mitchell", trainerImage: "https://i.pravatar.cc/150?img=45", description: "Boxing-inspired fitness with punching combinations, footwork drills, and conditioning." },
+      { id: "c7", name: "CrossFit WOD", image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800", category: "Weights", difficulty: "Advanced", duration: "60 min", schedule: "Mon, Wed, Fri · 6:00 AM", price: 40, bookingCount: 52, trainerName: "Sarah Mitchell", trainerImage: "https://i.pravatar.cc/150?img=45", description: "Workout of the Day. Constantly varied functional movements at high intensity. Prior experience recommended." },
+      { id: "c8", name: "Meditation & Stretch", image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800", category: "Yoga", difficulty: "Beginner", duration: "45 min", schedule: "Sun · 9:00 AM", price: 18, bookingCount: 22, trainerName: "Sarah Mitchell", trainerImage: "https://i.pravatar.cc/150?img=45", description: "Guided meditation followed by deep stretching. Perfect for recovery days and stress relief." },
+    ];
+
+    const CATEGORIES = ["All", "Yoga", "Cardio", "Weights"];
+    const DIFFICULTIES = ["All", "Beginner", "Intermediate", "Advanced"];
+    const DIFF_STYLE = {
+      Beginner: { dot: "bg-teal", text: "text-teal", ring: "border-teal/40 bg-teal/10" },
+      Intermediate: { dot: "bg-amber", text: "text-amber", ring: "border-amber/40 bg-amber/10" },
+      Advanced: { dot: "bg-rose", text: "text-rose", ring: "border-rose/40 bg-rose/10" },
+    };
+
+    const state = {
+      category: "All",
+      difficulty: "All",
+      search: "",
+      maxPrice: 45,
+      sort: "popular",
+      booked: new Set(),
+      favorites: new Set(),
+      loading: true,
+      error: false,
+    };
+
+    const $ = (s) => document.querySelector(s);
+    const grid = $("#grid");
+    const resultCount = $("#resultCount");
+
+    // ---------- Chips ----------
+    function buildChips() {
+      const catWrap = $("#categoryChips");
+      catWrap.innerHTML = CATEGORIES.map((c) => chip(c, "category")).join("");
+      $("#difficultyChips").innerHTML = DIFFICULTIES.map((d) => chip(d, "difficulty")).join("");
+      catWrap.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => { state.category = b.dataset.value; syncChips(); render(); }));
+      $("#difficultyChips").querySelectorAll("button").forEach((b) => b.addEventListener("click", () => { state.difficulty = b.dataset.value; syncChips(); render(); }));
+      syncChips();
+    }
+    function chip(label, kind) {
+      const active = state[kind] === label;
+      return `<button type="button" data-value="${label}" aria-pressed="${active}" class="inline-flex min-h-[44px] items-center rounded-full border px-4 py-2 text-sm font-medium transition active:scale-[0.97] ${active ? "border-volt bg-volt text-ink-950" : "border-ink-600 bg-ink-900 text-fog-300 hover:border-ink-500 hover:text-fog-200"}">${label}</button>`;
+    }
+    function syncChips() {
+      document.querySelectorAll("#categoryChips button").forEach((b) => updateChip(b, b.dataset.value === state.category));
+      document.querySelectorAll("#difficultyChips button").forEach((b) => updateChip(b, b.dataset.value === state.difficulty));
+    }
+    function updateChip(b, active) {
+      b.setAttribute("aria-pressed", active);
+      b.className = `inline-flex min-h-[44px] items-center rounded-full border px-4 py-2 text-sm font-medium transition active:scale-[0.97] ${active ? "border-volt bg-volt text-ink-950" : "border-ink-600 bg-ink-900 text-fog-300 hover:border-ink-500 hover:text-fog-200"}`;
+    }
+
+    // ---------- Filtering ----------
+    function visibleClasses() {
+      let list = CLASSES.filter((c) => c.status !== "pending" || true);
+      if (state.category !== "All") list = list.filter((c) => c.category === state.category);
+      if (state.difficulty !== "All") list = list.filter((c) => c.difficulty === state.difficulty);
+      if (state.search.trim()) {
+        const q = state.search.trim().toLowerCase();
+        list = list.filter((c) => c.name.toLowerCase().includes(q) || c.category.toLowerCase().includes(q) || c.description.toLowerCase().includes(q));
+      }
+      list = list.filter((c) => c.price <= state.maxPrice);
+      switch (state.sort) {
+        case "price-asc": list = [...list].sort((a, b) => a.price - b.price); break;
+        case "price-desc": list = [...list].sort((a, b) => b.price - a.price); break;
+        case "duration": list = [...list].sort((a, b) => parseInt(a.duration) - parseInt(b.duration)); break;
+        default: list = [...list].sort((a, b) => b.bookingCount - a.bookingCount);
+      }
+      return list;
+    }
+
+    // ---------- Render ----------
+    function render() {
+      if (state.error) { showError(); return; }
+      hideError();
+      if (state.loading) { renderSkeletons(); return; }
+
+      const list = visibleClasses();
+      resultCount.textContent = list.length;
+      $("#emptyState").hidden = list.length > 0;
+      grid.hidden = list.length === 0;
+
+      grid.innerHTML = list.map((c, i) => card(c, i)).join("");
+      grid.querySelectorAll("[data-book]").forEach((b) => b.addEventListener("click", () => openBooking(b.dataset.book)));
+      grid.querySelectorAll("[data-fav]").forEach((b) => b.addEventListener("click", () => toggleFav(b.dataset.fav, b)));
+    }
+
+    function card(c, i) {
+      const booked = state.booked.has(c.id);
+      const fav = state.favorites.has(c.id);
+      const d = DIFF_STYLE[c.difficulty];
+      return `
+      <article class="class-card rise group flex flex-col overflow-hidden rounded-xl border border-ink-600 bg-ink-900 transition-colors hover:border-ink-500" style="animation-delay:${Math.min(i, 8) * 45}ms">
+        <div class="relative aspect-[16/10] overflow-hidden bg-ink-800">
+          <img src="${c.image}" alt="" loading="lazy" class="card-img h-full w-full object-cover" onerror="this.style.display='none'" />
+          <div class="absolute inset-0 bg-gradient-to-t from-ink-950/70 via-transparent to-transparent"></div>
+          <span class="absolute left-3 top-3 rounded-full border border-ink-500/60 bg-ink-950/70 px-2.5 py-1 text-xs font-semibold text-fog-200 backdrop-blur-sm">${c.category}</span>
+          <span class="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full border ${d.ring} px-2.5 py-1 text-xs font-semibold ${d.text} backdrop-blur-sm"><span class="h-1.5 w-1.5 rounded-full ${d.dot}"></span>${c.difficulty}</span>
+          <button data-fav="${c.id}" aria-pressed="${fav}" aria-label="${fav ? "Remove from favorites" : "Save to favorites"}" class="fav-btn absolute bottom-3 right-3 flex h-9 w-9 items-center justify-center rounded-full border border-ink-500/60 bg-ink-950/70 text-fog-300 backdrop-blur-sm transition-colors hover:text-rose active:scale-90 ${fav ? "text-rose" : ""}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="${fav ? "currentColor" : "none"}" aria-hidden="true"><path d="M12 21s-7.5-4.6-10-9.3C.6 8.4 2 5 5.2 5c2 0 3.3 1.2 4 2.3C9.9 6.2 11.2 5 13.2 5 16.4 5 17.8 8.4 16.4 11.7 13.9 16.4 12 21 12 21Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="flex flex-1 flex-col p-4">
+          <h3 class="font-display text-lg font-bold leading-snug tracking-tight text-fog-200">${c.name}</h3>
+          <p class="mt-1.5 flex items-center gap-2 text-sm font-medium text-fog-200">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" class="text-volt shrink-0" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            ${c.schedule}
+          </p>
+          <p class="mt-2 line-clamp-2 text-sm text-fog-400">${c.description}</p>
+          <div class="mt-3 flex items-center gap-3 text-xs text-fog-500">
+            <span class="inline-flex items-center gap-1"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>${c.duration}</span>
+            <span class="inline-flex items-center gap-1"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 8 0 4 4 0 0 0-8 0Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${c.bookingCount} booked</span>
+          </div>
+          <div class="mt-3 flex items-center gap-2 border-t border-ink-600 pt-3">
+            <img src="${c.trainerImage}" alt="" class="h-6 w-6 rounded-full object-cover" />
+            <span class="text-xs text-fog-400">${c.trainerName}</span>
+            <span class="rounded-full bg-ink-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-fog-500">Trainer</span>
+          </div>
+          <div class="mt-4 flex items-center justify-between gap-3">
+            <div>
+              <div class="font-display text-xl font-extrabold text-fog-200">$${c.price}</div>
+              <div class="text-[11px] text-fog-500">per session</div>
+            </div>
+            ${booked
+              ? `<button disabled title="You already have a booking for this class" class="inline-flex items-center gap-1.5 rounded-full border border-teal/40 bg-teal/10 px-4 py-3 text-sm font-semibold text-teal cursor-default"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 5 5L20 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Booked</button>`
+              : `<button data-book="${c.id}" class="rounded-full bg-volt px-5 py-3 text-sm font-semibold text-ink-950 transition hover:brightness-110 active:scale-[0.98]">Book class</button>`}
+          </div>
+        </div>
+      </article>`;
+    }
+
+    function renderSkeletons() {
+      resultCount.textContent = "…";
+      $("#emptyState").hidden = true;
+      grid.hidden = false;
+      grid.setAttribute("aria-busy", "true");
+      grid.innerHTML = Array.from({ length: 6 }).map(() => `
+        <div class="overflow-hidden rounded-xl border border-ink-600 bg-ink-900">
+          <div class="skeleton aspect-[16/10]"></div>
+          <div class="space-y-3 p-4">
+            <div class="skeleton h-5 w-3/4 rounded"></div>
+            <div class="skeleton h-4 w-2/3 rounded"></div>
+            <div class="skeleton h-3 w-full rounded"></div>
+            <div class="skeleton h-3 w-5/6 rounded"></div>
+            <div class="flex justify-between pt-2"><div class="skeleton h-6 w-12 rounded"></div><div class="skeleton h-9 w-24 rounded-full"></div></div>
+          </div>
+        </div>`).join("");
+    }
+
+    function showError() {
+      $("#stateBar").classList.remove("hidden");
+      $("#stateBar").classList.add("flex");
+      grid.hidden = true;
+      $("#emptyState").hidden = true;
+      resultCount.textContent = "0";
+    }
+    function hideError() {
+      $("#stateBar").classList.add("hidden");
+      $("#stateBar").classList.remove("flex");
+    }
+
+    // ---------- Favorites ----------
+    function toggleFav(id, btn) {
+      if (state.favorites.has(id)) state.favorites.delete(id);
+      else state.favorites.add(id);
+      const fav = state.favorites.has(id);
+      btn.setAttribute("aria-pressed", fav);
+      btn.setAttribute("aria-label", fav ? "Remove from favorites" : "Save to favorites");
+      btn.classList.toggle("text-rose", fav);
+      btn.querySelector("svg").setAttribute("fill", fav ? "currentColor" : "none");
+    }
+
+    // ---------- Booking modal ----------
+    let lastFocused = null;
+    function openBooking(id) {
+      const c = CLASSES.find((x) => x.id === id);
+      if (!c) return;
+      lastFocused = document.activeElement;
+      const d = DIFF_STYLE[c.difficulty];
+      $("#modalBody").innerHTML = `
+        <div class="relative">
+          <img src="${c.image}" alt="" class="h-32 w-full rounded-t-2xl object-cover" onerror="this.style.display='none'" />
+          <div class="absolute inset-0 bg-gradient-to-t from-ink-900 to-transparent rounded-t-2xl"></div>
+          <button id="modalClose" class="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full border border-ink-500/60 bg-ink-950/70 text-fog-300 hover:text-fog-200 active:scale-90" aria-label="Close">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="p-5">
+          <div class="flex items-center gap-2">
+            <span class="rounded-full border border-ink-500/60 bg-ink-800 px-2.5 py-0.5 text-xs font-semibold text-fog-200">${c.category}</span>
+            <span class="inline-flex items-center gap-1.5 rounded-full border ${d.ring} px-2.5 py-0.5 text-xs font-semibold ${d.text}"><span class="h-1.5 w-1.5 rounded-full ${d.dot}"></span>${c.difficulty}</span>
+          </div>
+          <h2 id="modalTitle" class="mt-3 font-display text-2xl font-extrabold tracking-tight text-fog-200">${c.name}</h2>
+          <p class="mt-1 text-sm text-fog-400">${c.schedule} · ${c.duration}</p>
+
+          <dl class="mt-4 space-y-2 rounded-lg border border-ink-600 bg-ink-850 p-4 text-sm">
+            <div class="flex items-center justify-between"><dt class="text-fog-500">Session</dt><dd class="font-medium text-fog-200">$${c.price}.00</dd></div>
+            <div class="flex items-center justify-between"><dt class="text-fog-500">Booking fee</dt><dd class="font-medium text-fog-200">$0.00</dd></div>
+            <div class="flex items-center justify-between border-t border-ink-600 pt-2"><dt class="font-semibold text-fog-300">Total due</dt><dd class="font-display text-lg font-extrabold text-volt">$${c.price}.00</dd></div>
+          </dl>
+
+          <p class="mt-3 flex items-center gap-2 text-xs text-fog-500">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" class="text-teal" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 10h18" stroke="currentColor" stroke-width="2"/></svg>
+            Secure payment via Stripe. Cancel up to 12 hours before for a full refund.
+          </p>
+
+          <button id="payBtn" class="mt-5 w-full rounded-full bg-volt px-5 py-3 text-sm font-semibold text-ink-950 transition hover:brightness-110 active:scale-[0.99]">Pay &amp; book · $${c.price}</button>
+          <button id="modalCancel" class="mt-2 w-full rounded-full px-5 py-3 text-sm font-medium text-fog-400 hover:text-fog-200">Cancel</button>
+        </div>`;
+      const root = $("#modalRoot");
+      root.hidden = false;
+      document.body.style.overflow = "hidden";
+      document.querySelector("header").inert = true;
+      document.querySelector("main").inert = true;
+      document.querySelector("footer").inert = true;
+      $("#modalClose").addEventListener("click", closeModal);
+      $("#modalCancel").addEventListener("click", closeModal);
+      $("#modalBackdrop").addEventListener("click", closeModal);
+      $("#payBtn").addEventListener("click", () => confirmBooking(c));
+      setTimeout(() => $("#payBtn").focus(), 50);
+    }
+    function closeModal() {
+      $("#modalRoot").hidden = true;
+      document.body.style.overflow = "";
+      document.querySelector("header").inert = false;
+      document.querySelector("main").inert = false;
+      document.querySelector("footer").inert = false;
+      if (lastFocused) lastFocused.focus();
+    }
+    function trapTab(e) {
+      const modal = $("#modalCard");
+      const focusable = modal.querySelectorAll('button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      const visible = Array.from(focusable).filter((el) => el.offsetParent !== null);
+      if (visible.length === 0) return;
+      const first = visible[0];
+      const last = visible[visible.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+    function confirmBooking(c) {
+      const btn = $("#payBtn");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="inline-flex items-center gap-2"><svg class="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.5" opacity="0.25"/><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>Processing payment…</span>`;
+      setTimeout(() => {
+        state.booked.add(c.id);
+        closeModal();
+        render();
+        toast(`Booked. See you at ${c.name}.`);
+        updateBadge();
+      }, 950);
+    }
+
+    // ---------- Toast ----------
+    function toast(msg) {
+      const root = $("#toastRoot");
+      const el = document.createElement("div");
+      el.className = "toast-in pointer-events-auto flex items-center gap-3 rounded-full border border-teal/40 bg-ink-900 px-5 py-3 shadow-lg shadow-ink-950/50";
+      el.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-teal shrink-0" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="m8 12 3 3 5-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="text-sm font-medium text-fog-200">${msg}</span>`;
+      root.appendChild(el);
+      setTimeout(() => { el.style.transition = "opacity .3s, transform .3s"; el.style.opacity = "0"; el.style.transform = "translateY(8px)"; setTimeout(() => el.remove(), 300); }, 3600);
+    }
+
+    function updateBadge() {
+      const badge = $("#bookingsBadge");
+      const n = state.booked.size;
+      badge.textContent = n;
+      badge.classList.toggle("hidden", n === 0);
+      badge.classList.toggle("flex", n > 0);
+    }
+
+    // ---------- Load (simulated API) ----------
+    function load() {
+      state.loading = true;
+      state.error = false;
+      render();
+      const hash = location.hash.replace("#", "");
+      // Demo states via hash: #error | #loading | #empty
+      if (hash === "loading") return;
+      const fail = hash === "error";
+      const delay = fail ? 500 : 650;
+      setTimeout(() => {
+        state.loading = false;
+        state.error = fail;
+        if (hash === "empty") {
+          // Force empty: pick a combo with no matches
+          state.category = "Yoga";
+          state.difficulty = "Advanced";
+          syncChips();
+        }
+        render();
+        grid.setAttribute("aria-busy", "false");
+      }, delay);
+    }
+
+    // ---------- Wiring ----------
+    function init() {
+      buildChips();
+
+      const onSearch = (val) => { state.search = val; render(); };
+      $("#railSearch").addEventListener("input", (e) => { onSearch(e.target.value); if ($("#navSearch")) $("#navSearch").value = e.target.value; });
+      $("#navSearch").addEventListener("input", (e) => { onSearch(e.target.value); $("#railSearch").value = e.target.value; });
+
+      $("#priceRange").addEventListener("input", (e) => {
+        state.maxPrice = parseInt(e.target.value);
+        $("#priceLabel").textContent = "$" + state.maxPrice;
+        render();
+      });
+
+      $("#sortSelect").addEventListener("change", (e) => { state.sort = e.target.value; render(); });
+
+      const clearAll = () => {
+        state.category = "All"; state.difficulty = "All"; state.search = ""; state.maxPrice = 45; state.sort = "popular";
+        $("#railSearch").value = ""; $("#navSearch").value = ""; $("#priceRange").value = 45; $("#priceLabel").textContent = "$45"; $("#sortSelect").value = "popular";
+        syncChips(); render();
+      };
+      $("#clearFilters").addEventListener("click", clearAll);
+      $("#emptyClear").addEventListener("click", clearAll);
+      $("#retryBtn").addEventListener("click", () => { location.hash = ""; load(); });
+
+      $("#menuBtn").addEventListener("click", () => {
+        const nav = $("#mobileNav");
+        const opening = nav.hidden;
+        nav.hidden = !opening;
+        $("#menuBtn").setAttribute("aria-expanded", opening);
+        if (opening) {
+          setTimeout(() => nav.querySelector("a")?.focus(), 50);
+        } else {
+          $("#menuBtn").focus();
+        }
+      });
+
+      $("#filterToggle").addEventListener("click", () => {
+        const p = $("#filterPanel");
+        const opening = p.classList.contains("hidden");
+        p.classList.toggle("hidden");
+        $("#filterToggle").setAttribute("aria-expanded", opening);
+        if (opening) {
+          setTimeout(() => $("#railSearch")?.focus(), 50);
+        }
+      });
+
+      $("#bookingsBtn").addEventListener("click", () => {
+        if (state.booked.size === 0) toast("You have no bookings yet.");
+        else toast(`${state.booked.size} class${state.booked.size > 1 ? "es" : ""} booked.`);
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if ($("#modalRoot").hidden) return;
+        if (e.key === "Escape") { closeModal(); return; }
+        if (e.key === "Tab") trapTab(e);
+      });
+
+      load();
+    }
+
+    init();
+  </script>
+</body>
+</html>

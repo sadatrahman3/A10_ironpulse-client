@@ -26,7 +26,7 @@ export default function ForumPostDetails() {
     try {
       const { data } = await api.post(`/forum/${id}/vote`, { type });
       setPost(data.post);
-      setUserVote(userVote === type ? null : type);
+      setUserVote(data.message === "Vote removed" ? null : type);
     } catch (err) { toast.error(err.response?.data?.message || "Vote failed"); }
   };
 

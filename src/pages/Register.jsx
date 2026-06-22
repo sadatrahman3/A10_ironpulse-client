@@ -14,9 +14,11 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (form.name.trim().length < 2) return toast.error("Name must be at least 2 characters");
     if (form.password.length < 6) return toast.error("Password must be at least 6 characters");
     if (!/[A-Z]/.test(form.password)) return toast.error("Password must contain an uppercase letter");
     if (!/[a-z]/.test(form.password)) return toast.error("Password must contain a lowercase letter");
+    if (form.image && !/^https?:\/\//.test(form.image)) return toast.error("Please enter a valid image URL");
 
     setSubmitting(true);
     try {

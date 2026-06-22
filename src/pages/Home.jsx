@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import api from "../api";
 import ClassCard from "../components/ClassCard";
+import TrainerBanner from "../components/TrainerBanner";
 
 export default function Home() {
   const [featured, setFeatured] = useState([]);
@@ -71,6 +72,8 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      <TrainerBanner />
 
       {/* Latest Forum Posts */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">

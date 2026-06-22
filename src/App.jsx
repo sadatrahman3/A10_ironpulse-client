@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthProvider } from "./contexts/AuthContext";
-import { ThemeProvider } from "./contexts/ThemeContext";
+import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ScrollToTop from "./components/ScrollToTop";
 import Navbar from "./components/Navbar";
@@ -36,6 +36,11 @@ import AdminManageClasses from "./pages/dashboard/AdminManageClasses";
 import AdminAddPost from "./pages/dashboard/AdminAddPost";
 import AdminTransactions from "./pages/dashboard/AdminTransactions";
 import AdminManageForum from "./pages/dashboard/AdminManageForum";
+
+function ToastWithTheme() {
+  const { theme } = useTheme();
+  return <ToastContainer position="bottom-right" autoClose={3000} theme={theme === "dark" ? "dark" : "light"} />;
+}
 
 export default function App() {
   return (
@@ -80,7 +85,7 @@ export default function App() {
               </Routes>
             </main>
             <Footer />
-            <ToastContainer position="bottom-right" autoClose={3000} theme="dark" />
+            <ToastWithTheme />
           </div>
         </ThemeProvider>
       </AuthProvider>

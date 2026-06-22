@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { FiHome, FiBookOpen, FiHeart, FiUserPlus, FiPlusSquare, FiList, FiUsers, FiCheckSquare, FiCreditCard, FiMessageSquare, FiSettings } from "react-icons/fi";
+import { useState } from "react";
+import { FiHome, FiBookOpen, FiHeart, FiUserPlus, FiPlusSquare, FiList, FiUsers, FiCheckSquare, FiCreditCard, FiMessageSquare, FiSettings, FiMenu, FiX } from "react-icons/fi";
 
 const sidebarLinks = {
   user: [
@@ -31,11 +32,18 @@ const sidebarLinks = {
 export default function DashboardLayout() {
   const { user } = useAuth();
   const location = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
   const links = sidebarLinks[user?.role] || sidebarLinks.user;
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)]">
-      <aside className="hidden lg:flex w-64 shrink-0 flex-col border-r border-ink-600 bg-ink-900 p-4">
+      <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden fixed bottom-4 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-volt text-ink-950 shadow-lg shadow-volt/20">
+        {mobileOpen ? <FiX size={22} /> : <FiMenu size={22} />}
+      </button>
+
+      {mobileOpen && <div className="lg:hidden fixed inset-0 z-40 bg-ink-950/80 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />}
+
+      <aside className={`${mobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 w-64 shrink-0 flex flex-col border-r border-ink-600 bg-ink-900 p-4 transition-transform duration-200`}>
         <div className="mb-6 flex items-center gap-3 px-3">
           <img src={user?.image || "https://i.pravatar.cc/80?img=33"} alt="" className="h-10 w-10 rounded-full object-cover" />
           <div className="min-w-0">
@@ -47,13 +55,14 @@ export default function DashboardLayout() {
           {links.map(({ to, icon: Icon, label, end }) => {
             const active = end ? location.pathname === to : location.pathname.startsWith(to);
             return (
-              <Link key={to} to={to} className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${active ? "bg-volt text-ink-950" : "text-fog-400 hover:text-fog-200 hover:bg-ink-800"}`}>
+              <Link key={to} to={to} onClick={() => setMobileOpen(false)} className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${active ? "bg-volt text-ink-950" : "text-fog-400 hover:text-fog-200 hover:bg-ink-800"}`}>
                 <Icon size={18} />{label}
               </Link>
             );
           })}
         </nav>
       </aside>
+
       <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
         <Outlet />
       </main>

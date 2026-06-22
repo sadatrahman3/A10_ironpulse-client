@@ -1,23 +1,27 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import api from "../api";
 import ClassCard from "../components/ClassCard";
-import TrainerBanner from "../components/TrainerBanner";
+import Spinner from "../components/Spinner";
+import { toast } from "react-toastify";
 
 export default function Home() {
   const [featured, setFeatured] = useState([]);
   const [posts, setPosts] = useState([]);
-  const [stats, setStats] = useState({ classes: 0, trainers: 0, bookings: 0 });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get("/classes/featured").then((r) => { setFeatured(r.data); setStats((s) => ({ ...s, classes: r.data.length })); }).catch(() => {});
-    api.get("/forum/latest").then((r) => setPosts(r.data)).catch(() => {});
+    Promise.all([
+      api.get("/classes/featured").then((r) => setFeatured(r.data)).catch(() => {}),
+      api.get("/forum/latest").then((r) => setPosts(r.data)).catch(() => {}),
+    ]).finally(() => setLoading(false));
   }, []);
+
+  if (loading) return <div className="py-20"><Spinner size="lg" /></div>;
 
   return (
     <div>
-      {/* Banner */}
       <section className="relative overflow-hidden border-b border-ink-600">
         <div className="absolute inset-0 bg-gradient-to-br from-volt/5 via-transparent to-teal/5" />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24 relative">
@@ -38,7 +42,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats */}
       <section className="border-b border-ink-600 bg-ink-900/40">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-2 sm:grid-cols-4 gap-6">
           {[
@@ -55,7 +58,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Classes */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex items-end justify-between mb-8">
           <div>
@@ -73,9 +75,6 @@ export default function Home() {
         </div>
       </section>
 
-      <TrainerBanner />
-
-      {/* Latest Forum Posts */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex items-end justify-between mb-8">
           <div>
@@ -105,7 +104,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Why IronPulse */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <h2 className="font-display text-2xl font-extrabold text-fog-200 text-center mb-8">Why IronPulse?</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -123,7 +121,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="rounded-2xl border border-ink-600 bg-gradient-to-br from-volt/10 via-ink-900 to-ink-900 p-8 sm:p-12 text-center">
           <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-fog-200">Ready to Start Training?</h2>

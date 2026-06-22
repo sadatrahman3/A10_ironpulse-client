@@ -24,8 +24,8 @@ export function AuthProvider({ children }) {
         localStorage.setItem("user", JSON.stringify(data.user));
       })
       .catch(() => {
-        setUser(null);
-        localStorage.removeItem("user");
+        // Keep the cached user from localStorage instead of logging out.
+        // The 401 interceptor handles real auth failures on actual API calls.
       })
       .finally(() => setLoading(false));
   }, []);

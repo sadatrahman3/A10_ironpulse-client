@@ -3,6 +3,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import api from "../api";
 import Spinner from "../components/Spinner";
+import SEO from "../components/SEO";
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
@@ -43,6 +44,7 @@ export default function PaymentSuccess() {
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
+      <SEO title="Payment Successful" description="Your payment was processed successfully." />
       {status === "success" ? (
         <>
           <div className="text-6xl mb-4">✅</div>

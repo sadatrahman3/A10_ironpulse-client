@@ -3,6 +3,7 @@ import api from "../api";
 import ClassCard from "../components/ClassCard";
 import Spinner from "../components/Spinner";
 import { ClassCardSkeleton } from "../components/Skeletons";
+import SEO from "../components/SEO";
 
 export default function AllClasses() {
   const [classes, setClasses] = useState([]);
@@ -43,6 +44,7 @@ export default function AllClasses() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <SEO title="All Classes" description="Browse all available fitness classes at IronPulse." />
       <div className="mb-8">
         <h1 className="font-display text-3xl font-extrabold text-fog-200">All Classes</h1>
         <p className="mt-1 text-sm text-fog-400">Browse and book fitness sessions</p>

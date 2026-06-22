@@ -12,7 +12,17 @@ export function AuthProvider({ children }) {
     if (saved) {
       try { setUser(JSON.parse(saved)); } catch { localStorage.removeItem("user"); }
     }
-    setLoading(false);
+
+    api.get("/auth/me")
+      .then(({ data }) => {
+        setUser(data.user);
+        localStorage.setItem("user", JSON.stringify(data.user));
+      })
+      .catch(() => {
+        setUser(null);
+        localStorage.removeItem("user");
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const login = async (email, password) => {

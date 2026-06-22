@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import api from "../api";
 import ClassCard from "../components/ClassCard";
+import TrainerBanner from "../components/TrainerBanner";
 import Spinner from "../components/Spinner";
+import SEO from "../components/SEO";
 import { toast } from "react-toastify";
 
 export default function Home() {
@@ -22,6 +24,7 @@ export default function Home() {
 
   return (
     <div>
+      <SEO title="Home" description="Discover expert-led fitness classes, book your spot, and join the IronPulse community." />
       <section className="relative overflow-hidden border-b border-ink-600">
         <div className="absolute inset-0 bg-gradient-to-br from-volt/5 via-transparent to-teal/5" />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24 relative">

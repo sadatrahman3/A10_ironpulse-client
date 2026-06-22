@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
+import SEO from "../components/SEO";
 
 export default function Register() {
   const [form, setForm] = useState({ name: "", email: "", password: "", image: "" });
@@ -34,6 +35,7 @@ export default function Register() {
 
   return (
     <div className="flex min-h-[70vh] items-center justify-center px-4 py-12">
+      <SEO title="Register" description="Create your IronPulse account." />
       <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
         <div className="rounded-2xl border border-ink-600 bg-ink-900 p-8">
           <h1 className="font-display text-2xl font-extrabold text-fog-200 text-center">Create Account</h1>

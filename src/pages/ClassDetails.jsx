@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import api from "../api";
 import Spinner from "../components/Spinner";
+import SEO from "../components/SEO";
 import { toast } from "react-toastify";
 
 const DIFF_STYLE = {
@@ -69,6 +70,7 @@ export default function ClassDetails() {
 
   return (
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
+        <SEO title={cls.name} description={cls.description} />
         <Link to="/classes" className="inline-flex items-center gap-1 text-sm text-fog-500 hover:text-fog-300 mb-6">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5m7-7-7 7 7 7"/></svg>
           Back to Classes

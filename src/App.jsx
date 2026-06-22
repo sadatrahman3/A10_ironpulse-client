@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { HelmetProvider } from "react-helmet-async";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
@@ -45,6 +46,7 @@ function ToastWithTheme() {
 export default function App() {
   return (
     <ErrorBoundary>
+    <HelmetProvider>
     <BrowserRouter>
       <ScrollToTop />
       <AuthProvider>
@@ -59,7 +61,7 @@ export default function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forum" element={<Forum />} />
-                <Route path="/forum/:id" element={<ForumPostDetails />} />
+                <Route path="/forum/:id" element={<PrivateRoute><ForumPostDetails /></PrivateRoute>} />
                 <Route path="/payment/success" element={<PrivateRoute><PaymentSuccess /></PrivateRoute>} />
                 <Route path="/payment/cancel" element={<PrivateRoute><PaymentCancel /></PrivateRoute>} />
                 <Route path="/dashboard" element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
@@ -90,6 +92,7 @@ export default function App() {
         </ThemeProvider>
       </AuthProvider>
     </BrowserRouter>
+    </HelmetProvider>
     </ErrorBoundary>
   );
 }

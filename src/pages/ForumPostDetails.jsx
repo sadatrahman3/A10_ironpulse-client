@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import api from "../api";
 import Spinner from "../components/Spinner";
+import SEO from "../components/SEO";
 import { toast } from "react-toastify";
 
 export default function ForumPostDetails() {
@@ -63,6 +64,7 @@ export default function ForumPostDetails() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
+      <SEO title={post.title} description={post.description} />
       <article className="rounded-2xl border border-ink-600 bg-ink-900 overflow-hidden">
         <img src={post.image} alt="" className="w-full aspect-[21/9] object-cover" onError={(e) => e.target.style.display = "none"} />
         <div className="p-6 sm:p-8">

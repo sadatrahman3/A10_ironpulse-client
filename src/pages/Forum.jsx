@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import api from "../api";
 import Spinner from "../components/Spinner";
+import SEO from "../components/SEO";
 
 export default function Forum() {
   const [posts, setPosts] = useState([]);
@@ -37,6 +38,7 @@ export default function Forum() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <SEO title="Community Forum" description="Insights, tips, and discussions from trainers and admins." />
       <div className="mb-8">
         <h1 className="font-display text-3xl font-extrabold text-fog-200">Community Forum</h1>
         <p className="mt-1 text-sm text-fog-400">Insights, tips, and discussions from trainers and admins</p>

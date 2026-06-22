@@ -15,23 +15,36 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const saved = localStorage.getItem("user");
-    if (saved) {
-      try { setUser(JSON.parse(saved)); } catch { localStorage.removeItem("user"); }
+    const token = localStorage.getItem("token");
+
+    if (saved && token) {
+      try { setUser(JSON.parse(saved)); } catch {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+      }
+    } else if (saved && !token) {
+      localStorage.removeItem("user");
+      setLoading(false);
+      return;
     }
 
-    if (!saved) {
+    if (!saved || !token) {
       setLoading(false);
       return;
     }
 
     api.get("/auth/me")
       .then(({ data }) => {
+        if (data.token) localStorage.setItem("token", data.token);
         setUser(data.user);
         localStorage.setItem("user", JSON.stringify(data.user));
       })
-      .catch(() => {
-        // Keep cached user — the 401 interceptor dispatches "auth:logout"
-        // on real session failures, which sets user to null.
+      .catch((err) => {
+        if (err.response?.status === 401) {
+          setUser(null);
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
+        }
       })
       .finally(() => setLoading(false));
   }, []);

@@ -9,13 +9,11 @@ const api = axios.create({
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    if (err.response?.status === 401 && !err.config?.url?.includes("/auth/me")) {
       const path = window.location.pathname;
-      if (!path.startsWith("/login") && !path.startsWith("/register")) {
+      if (!path.startsWith("/login") && !path.startsWith("/register") && !path.startsWith("/payment")) {
         localStorage.removeItem("user");
-        if (!path.startsWith("/payment")) {
-          window.location.href = `/login?redirect=${encodeURIComponent(path)}`;
-        }
+        window.location.href = `/login?redirect=${encodeURIComponent(path)}`;
       }
     }
     return Promise.reject(err);

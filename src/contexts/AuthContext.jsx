@@ -13,6 +13,11 @@ export function AuthProvider({ children }) {
       try { setUser(JSON.parse(saved)); } catch { localStorage.removeItem("user"); }
     }
 
+    if (!saved) {
+      setLoading(false);
+      return;
+    }
+
     api.get("/auth/me")
       .then(({ data }) => {
         setUser(data.user);

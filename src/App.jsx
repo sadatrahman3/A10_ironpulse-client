@@ -18,6 +18,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Forum from "./pages/Forum";
 import ForumPostDetails from "./pages/ForumPostDetails";
+import Payment from "./pages/Payment";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancel from "./pages/PaymentCancel";
 import UserOverview from "./pages/dashboard/UserOverview";
@@ -62,6 +63,7 @@ export default function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/forum" element={<Forum />} />
                 <Route path="/forum/:id" element={<PrivateRoute><ForumPostDetails /></PrivateRoute>} />
+                <Route path="/payment/:classId" element={<PrivateRoute><Payment /></PrivateRoute>} />
                 <Route path="/payment/success" element={<PrivateRoute><PaymentSuccess /></PrivateRoute>} />
                 <Route path="/payment/cancel" element={<PrivateRoute><PaymentCancel /></PrivateRoute>} />
                 <Route path="/dashboard" element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>

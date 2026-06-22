@@ -1,19 +1,20 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import api from "../../api";
 import Spinner from "../../components/Spinner";
 import { toast } from "react-toastify";
 
 export default function TrainerMyPosts() {
+  const { user } = useAuth();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
       api.get(`/forum/author/${user.id}`).then((r) => setPosts(r.data)).catch(() => {}).finally(() => setLoading(false));
     } else { setLoading(false); }
-  }, []);
+  }, [user]);
 
   const handleDelete = async (id) => {
     if (!confirm("Delete this post?")) return;

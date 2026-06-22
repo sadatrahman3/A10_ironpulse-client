@@ -56,7 +56,7 @@ export default function AllClasses() {
           <button type="submit" className="rounded-lg bg-volt px-4 py-2.5 text-sm font-semibold text-ink-950 hover:brightness-110">Search</button>
         </form>
         <div className="flex gap-2 flex-wrap">
-          {["Yoga", "Cardio", "Weights"].map((cat) => (
+          {["Yoga", "Cardio", "Weights", "CrossFit", "Pilates", "Boxing", "Meditation"].map((cat) => (
             <button key={cat} onClick={() => handleCategory(cat)} className={`rounded-full border px-4 py-2 text-sm font-medium transition ${category === cat ? "border-volt bg-volt text-ink-950" : "border-ink-600 bg-ink-900 text-fog-300 hover:border-ink-500"}`}>{cat}</button>
           ))}
         </div>

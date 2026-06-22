@@ -7,9 +7,11 @@ export default function AdminOverview() {
   const [stats, setStats] = useState({ users: 0, classes: 0, bookings: 0 });
 
   useEffect(() => {
-    api.get("/users").then((r) => setStats((s) => ({ ...s, users: r.data.length }))).catch(() => {});
-    api.get("/classes/admin/all").then((r) => setStats((s) => ({ ...s, classes: r.data.length }))).catch(() => {});
-    api.get("/transactions").then((r) => setStats((s) => ({ ...s, bookings: r.data.length }))).catch(() => {});
+    api.get("/stats/admin").then((r) => setStats({
+      users: r.data.totalUsers,
+      classes: r.data.totalClasses,
+      bookings: r.data.totalBookings,
+    })).catch(() => {});
   }, []);
 
   return (

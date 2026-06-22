@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../contexts/AuthContext";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import SEO from "../components/SEO";
+import api from "../api";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const { login } = useAuth();
+  const { login, setUser } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirect = searchParams.get("redirect") || "/";
@@ -29,6 +31,20 @@ export default function Login() {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const { data } = await api.post("/auth/google", {
+        credential: credentialResponse.credential,
+      });
+      setUser(data.user);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      toast.success("Logged in with Google!");
+      navigate(redirect, { replace: true });
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Google login failed");
+    }
+  };
+
   return (
     <div className="flex min-h-[70vh] items-center justify-center px-4 py-12">
       <SEO title="Login" description="Login to your IronPulse account." />
@@ -36,7 +52,28 @@ export default function Login() {
         <div className="rounded-2xl border border-ink-600 bg-ink-900 p-8">
           <h1 className="font-display text-2xl font-extrabold text-fog-200 text-center">Welcome Back</h1>
           <p className="mt-1 text-sm text-fog-400 text-center">Sign in to your IronPulse account</p>
-          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+
+          {import.meta.env.VITE_GOOGLE_CLIENT_ID && (
+            <>
+              <div className="mt-6 flex justify-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => toast.error("Google login failed")}
+                  theme="filled_black"
+                  text="signin_with"
+                  shape="pill"
+                  size="large"
+                />
+              </div>
+              <div className="my-4 flex items-center gap-3">
+                <div className="flex-1 border-t border-ink-600" />
+                <span className="text-xs text-fog-500">OR</span>
+                <div className="flex-1 border-t border-ink-600" />
+              </div>
+            </>
+          )}
+
+          <form onSubmit={handleSubmit} className="mt-2 space-y-4">
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-fog-500 mb-1.5">Email</label>
               <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-lg border border-ink-600 bg-ink-800 px-4 py-3 text-sm text-fog-200 placeholder:text-fog-500 focus:outline-none focus:border-volt" placeholder="you@example.com" />

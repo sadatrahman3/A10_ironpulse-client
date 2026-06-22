@@ -20,7 +20,6 @@ export default function ClassDetails() {
   const [loading, setLoading] = useState(true);
   const [hasBooked, setHasBooked] = useState(false);
   const [isFav, setIsFav] = useState(false);
-  const [booking, setBooking] = useState(false);
 
   useEffect(() => {
     api.get(`/classes/${id}`).then((r) => setCls(r.data)).catch(() => toast.error("Class not found")).finally(() => setLoading(false));
@@ -34,16 +33,7 @@ export default function ClassDetails() {
     if (!user) return navigate(`/login?redirect=${encodeURIComponent(`/classes/${id}`)}`);
     if (user.role !== "user") return toast.error("Only regular users can book classes");
     if (hasBooked) return toast.error("You have already booked this class");
-    try {
-      setBooking(true);
-      const { data } = await api.post("/payments/create-checkout-session", {
-        classId: cls._id, className: cls.name, trainerName: cls.trainerName, price: cls.price, image: cls.image,
-      });
-      window.location.href = data.url;
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to initiate payment");
-      setBooking(false);
-    }
+    navigate(`/payment/${id}`);
   };
 
   const toggleFav = async () => {
@@ -104,8 +94,8 @@ export default function ClassDetails() {
           </div>
 
           <div className="mt-8 flex items-center gap-3">
-            <button onClick={handleBook} disabled={hasBooked || booking} className="flex-1 rounded-full bg-volt px-6 py-3.5 text-sm font-bold text-ink-950 hover:brightness-110 transition disabled:opacity-50">
-              {hasBooked ? "Already Booked" : booking ? "Processing..." : `Pay & Book · $${cls.price}`}
+            <button onClick={handleBook} disabled={hasBooked} className="flex-1 rounded-full bg-volt px-6 py-3.5 text-sm font-bold text-ink-950 hover:brightness-110 transition disabled:opacity-50">
+              {hasBooked ? "Already Booked" : "Book Now"}
             </button>
             <button onClick={toggleFav} className={`flex min-h-[48px] min-w-[48px] items-center justify-center rounded-full border px-4 py-3 transition ${isFav ? "border-rose/40 bg-rose/10 text-rose" : "border-ink-600 bg-ink-800 text-fog-300 hover:text-fog-200"}`}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill={isFav ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round"><path d="M12 21s-7.5-4.6-10-9.3C.6 8.4 2 5 5.2 5c2 0 3.3 1.2 4 2.3C9.9 6.2 11.2 5 13.2 5 16.4 5 17.8 8.4 16.4 11.7 13.9 16.4 12 21 12 21Z"/></svg>

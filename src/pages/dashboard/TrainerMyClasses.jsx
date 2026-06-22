@@ -49,8 +49,44 @@ export default function TrainerMyClasses() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-950/80 backdrop-blur-sm p-4">
           <form onSubmit={handleUpdate} className="w-full max-w-lg rounded-2xl border border-ink-500 bg-ink-900 p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <h2 className="font-display text-lg font-bold text-fog-200">Update Class</h2>
-            <input value={editClass.name} onChange={(e) => setEditClass({ ...editClass, name: e.target.value })} className="w-full rounded-lg border border-ink-600 bg-ink-800 px-4 py-3 text-sm text-fog-200 focus:outline-none focus:border-volt" placeholder="Class name" />
-            <textarea value={editClass.description} onChange={(e) => setEditClass({ ...editClass, description: e.target.value })} rows={3} className="w-full rounded-lg border border-ink-600 bg-ink-800 px-4 py-3 text-sm text-fog-200 focus:outline-none focus:border-volt" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-fog-500 mb-1.5">Class Name</label>
+                <input value={editClass.name} onChange={(e) => setEditClass({ ...editClass, name: e.target.value })} className="w-full rounded-lg border border-ink-600 bg-ink-800 px-4 py-3 text-sm text-fog-200 focus:outline-none focus:border-volt" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-fog-500 mb-1.5">Image URL</label>
+                <input value={editClass.image} onChange={(e) => setEditClass({ ...editClass, image: e.target.value })} className="w-full rounded-lg border border-ink-600 bg-ink-800 px-4 py-3 text-sm text-fog-200 focus:outline-none focus:border-volt" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-fog-500 mb-1.5">Category</label>
+                <select value={editClass.category} onChange={(e) => setEditClass({ ...editClass, category: e.target.value })} className="w-full rounded-lg border border-ink-600 bg-ink-800 px-4 py-3 text-sm text-fog-200 focus:outline-none focus:border-volt">
+                  <option>Yoga</option><option>Cardio</option><option>Weights</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-fog-500 mb-1.5">Difficulty</label>
+                <select value={editClass.difficulty} onChange={(e) => setEditClass({ ...editClass, difficulty: e.target.value })} className="w-full rounded-lg border border-ink-600 bg-ink-800 px-4 py-3 text-sm text-fog-200 focus:outline-none focus:border-volt">
+                  <option>Beginner</option><option>Intermediate</option><option>Advanced</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-fog-500 mb-1.5">Duration</label>
+                <input value={editClass.duration} onChange={(e) => setEditClass({ ...editClass, duration: e.target.value })} className="w-full rounded-lg border border-ink-600 bg-ink-800 px-4 py-3 text-sm text-fog-200 focus:outline-none focus:border-volt" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-fog-500 mb-1.5">Schedule</label>
+                <input value={editClass.schedule} onChange={(e) => setEditClass({ ...editClass, schedule: e.target.value })} className="w-full rounded-lg border border-ink-600 bg-ink-800 px-4 py-3 text-sm text-fog-200 focus:outline-none focus:border-volt" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-fog-500 mb-1.5">Price ($)</label>
+                <input type="number" min="1" value={editClass.price} onChange={(e) => setEditClass({ ...editClass, price: parseFloat(e.target.value) || 0 })} className="w-full rounded-lg border border-ink-600 bg-ink-800 px-4 py-3 text-sm text-fog-200 focus:outline-none focus:border-volt" />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-fog-500 mb-1.5">Description</label>
+              <textarea value={editClass.description} onChange={(e) => setEditClass({ ...editClass, description: e.target.value })} rows={3} className="w-full rounded-lg border border-ink-600 bg-ink-800 px-4 py-3 text-sm text-fog-200 focus:outline-none focus:border-volt" />
+            </div>
             <div className="flex gap-3">
               <button type="submit" className="flex-1 rounded-full bg-volt px-4 py-2.5 text-sm font-bold text-ink-950 hover:brightness-110">Save</button>
               <button type="button" onClick={() => setEditClass(null)} className="flex-1 rounded-full border border-ink-600 bg-ink-800 px-4 py-2.5 text-sm text-fog-300 hover:text-fog-200">Cancel</button>

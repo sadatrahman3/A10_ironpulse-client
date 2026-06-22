@@ -45,7 +45,10 @@ export default function Navbar() {
 
           {user ? (
             <div className="flex items-center gap-2 sm:gap-3">
-              <img src={user.image || "https://i.pravatar.cc/80?img=33"} alt="" className="h-8 w-8 rounded-full object-cover" />
+              <Link to={dashboardPath} className="hidden sm:flex items-center gap-2 rounded-full border border-ink-600 bg-ink-900 px-3 py-1.5 text-sm text-fog-300 hover:text-fog-200 hover:border-ink-500 transition-colors">
+                <img src={user.image || "https://i.pravatar.cc/80?img=33"} alt="" className="h-6 w-6 rounded-full object-cover" />
+                <span className="max-w-[80px] truncate">{user.name}</span>
+              </Link>
               <button onClick={handleLogout} className="rounded-full bg-ink-800 px-4 py-2 text-sm font-medium text-fog-300 hover:text-fog-200 hover:bg-ink-700 transition-colors">Logout</button>
             </div>
           ) : (

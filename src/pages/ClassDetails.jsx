@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import api from "../api";
 import Spinner from "../components/Spinner";
@@ -68,7 +68,11 @@ export default function ClassDetails() {
   const d = DIFF_STYLE[cls.difficulty] || DIFF_STYLE.Beginner;
 
   return (
-    <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
+        <Link to="/classes" className="inline-flex items-center gap-1 text-sm text-fog-500 hover:text-fog-300 mb-6">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5m7-7-7 7 7 7"/></svg>
+          Back to Classes
+        </Link>
       <div className="overflow-hidden rounded-2xl border border-ink-600 bg-ink-900">
         <div className="relative aspect-[21/9] overflow-hidden bg-ink-800">
           <img src={cls.image} alt="" className="h-full w-full object-cover" onError={(e) => e.target.style.display = "none"} />
